@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 TikTok Clip Maker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .progress-section {
+            display: none;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .progress-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .progress-bar-container {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 40px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .status-text {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .status-text .emoji {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .clips-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .clips-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .clips-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .clips-header h2 {
+            color: #667eea;
+        }
+
+        .clip-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        .clip-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .clip-info {
+            flex: 1;
+        }
+
+        .clip-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .clip-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .clip-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .clip-preview {
+            font-size: 13px;
+            color: #888;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        .btn-download-all {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-download-all:hover {
+            background: #0056b3;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .main-card {
+                padding: 25px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .clip-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 TikTok Clip Maker</h1>
+            <p>Turn any YouTube video into viral TikTok clips</p>
+        </div>
+
+        <div class="main-card">
+            <div class="input-section">
+                <div class="info-box">
+                    <strong>How it works:</strong> Paste a YouTube URL, and we'll automatically find the best viral moments, create 60-second clips with TikTok-style captions, and let you download them!
+                </div>
+
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="youtubeUrl" 
+                        class="url-input" 
+                        placeholder="Paste YouTube URL here... (e.g., https://www.youtube.com/watch?v=...)"
+                    >
+                    <button id="processBtn" class="btn btn-primary" onclick="processVideo()">
+                        Create Clips
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    ✨ <strong>Features:</strong> 9:16 vertical format • Yellow italic captions • Auto-synced to speech • Ready to upload!
+                </div>
+            </div>
+
+            <div id="progressSection" class="progress-section">
+                <div class="status-text" id="statusText">
+                    <span class="emoji">⏳</span>
+                    <span id="statusMessage">Preparing...</span>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar" style="width: 0%">
+                        <span id="progressText">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="clipsSection" class="clips-section">
+                <div class="clips-header">
+                    <h2>🎉 Your Clips Are Ready!</h2>
+                    <a href="#" id="downloadAllBtn" class="btn btn-download btn-download-all">
+                        Download All (ZIP)
+                    </a>
+                </div>
+
+                <div id="videoTitle" style="margin-bottom: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                    <strong>Video:</strong> <span id="videoTitleText"></span>
+                </div>
+
+                <div id="clipsList"></div>
+            </div>
+
+            <div id="errorMessage" class="error-message">
+                <strong>❌ Error:</strong> <span id="errorText"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentJobId = null;
+        let statusCheckInterval = null;
+
+        function processVideo() {
+            const url = document.getElementById('youtubeUrl').value.trim();
+            
+            if (!url) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                showError('Invalid YouTube URL');
+                return;
+            }
+
+            // Reset UI
+            document.getElementById('errorMessage').classList.remove('active');
+            document.getElementById('progressSection').classList.remove('active');
+            document.getElementById('clipsSection').classList.remove('active');
+            
+            // Disable button
+            const btn = document.getElementById('processBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+            // Start processing
+            fetch('/api/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                    resetButton();
+                    return;
+                }
+
+                currentJobId = data.job_id;
+                document.getElementById('progressSection').classList.add('active');
+                
+                // Start checking status
+                checkStatus();
+            })
+            .catch(error => {
+                showError('Failed to start processing: ' + error.message);
+                resetButton();
+            });
+        }
+
+        function checkStatus() {
+            if (!currentJobId) return;
+
+            fetch(`/api/status/${currentJobId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateProgress(data);
+
+                    if (data.status === 'complete') {
+                        showResults(data);
+                        resetButton();
+                    } else if (data.status === 'error') {
+                        showError(data.error || 'Processing failed');
+                        resetButton();
+                    } else {
+                        // Continue checking
+                        setTimeout(checkStatus, 1000);
+                    }
+                })
+                .catch(error => {
+                    showError('Failed to check status: ' + error.message);
+                    resetButton();
+                });
+        }
+
+        function updateProgress(data) {
+            const progress = data.progress || 0;
+            const statusMap = {
+                'queued': '⏳ Queued...',
+                'downloading': '📥 Downloading video...',
+                'analyzing': '🔍 Analyzing for viral moments...',
+                'creating_clips': `🎬 Creating clips... (${data.clips_created || 0}/${data.total_clips || 0})`
+            };
+
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = progress + '%';
+            document.getElementById('statusMessage').textContent = statusMap[data.status] || 'Processing...';
+        }
+
+        function showResults(data) {
+            document.getElementById('progressSection').classList.remove('active');
+            document.getElementById('clipsSection').classList.add('active');
+
+            // Set video title
+            document.getElementById('videoTitleText').textContent = data.video_title || 'Video';
+
+            // Set download all button
+            document.getElementById('downloadAllBtn').href = `/api/download-all/${currentJobId}`;
+
+            // Show clips
+            const clipsList = document.getElementById('clipsList');
+            clipsList.innerHTML = '';
+
+            data.clips.forEach((clip, index) => {
+                const clipCard = document.createElement('div');
+                clipCard.className = 'clip-card';
+                clipCard.style.animationDelay = (index * 0.1) + 's';
+
+                const previewText = clip.preview_text ? `<div class="clip-preview">"${clip.preview_text}"</div>` : '';
+
+                clipCard.innerHTML = `
+                    <div class="clip-info">
+                        <div class="clip-title">📹 Clip ${index + 1}</div>
+                        <div class="clip-meta">
+                            <span>⏱️ ${clip.duration}s</span>
+                            <span>💾 ${clip.size_mb} MB</span>
+                        </div>
+                        ${previewText}
+                    </div>
+                    <a href="/api/download/${currentJobId}/${clip.filename}" class="btn-download">
+                        ⬇️ Download
+                    </a>
+                `;
+
+                clipsList.appendChild(clipCard);
+            });
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('active');
+        }
+
+        function resetButton() {
+            const btn = document.getElementById('processBtn');
+            btn.disabled = false;
+            btn.innerHTML = 'Create Clips';
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('youtubeUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processVideo();
+            }
+        });
+    </script>
+</body>
+</html>
